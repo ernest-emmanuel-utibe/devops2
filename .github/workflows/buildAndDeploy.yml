@@ -40,16 +40,16 @@
               - name: Push Docker image to Docker Hub
                 run: docker push chichia/devopwork:latest
 
-              - name: Deploy to AWS EC2
-                env:
-                  PRIVATE_KEY: ${{ secrets.AWS_KEY }}
-                  INSTANCE_IP: ${{ secrets.AWS_IP_ADDRESS }}
-                run: |
-                  echo "$PRIVATE_KEY" > aws_key.pem
-                  chmod 600 aws_key.pem
-                  mkdir -p ~/.ssh
-                  ssh-keyscan -H $INSTANCE_IP >> ~/.ssh/known_hosts
-                  ssh -i aws_key.pem ubuntu@$INSTANCE_IP << 'EOF'
-                    sudo docker pull chichia/devopwork:latest
-                    sudo docker run -d -p 8081:8081 chichia/devopwork:latest
-                  EOF
+#              - name: Deploy to AWS EC2
+#                env:
+#                  PRIVATE_KEY: ${{ secrets.AWS_KEY }}
+#                  INSTANCE_IP: ${{ secrets.AWS_IP_ADDRESS }}
+#                run: |
+#                  echo "$PRIVATE_KEY" > aws_key.pem
+#                  chmod 600 aws_key.pem
+#                  mkdir -p ~/.ssh
+#                  ssh-keyscan -H $INSTANCE_IP >> ~/.ssh/known_hosts
+#                  ssh -i aws_key.pem ubuntu@$INSTANCE_IP << 'EOF'
+#                    sudo docker pull chichia/devopwork:latest
+#                    sudo docker run -d -p 8081:8081 chichia/devopwork:latest
+#                  EOF
