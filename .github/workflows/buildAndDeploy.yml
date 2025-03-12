@@ -76,18 +76,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Fetch entire history to properly compare branches
+          fetch-depth: 0  # Fetch full history for comparison
 
-      - name: Fetch latest dev branch
-        run: git fetch origin dev
+      - name: Find Previous Commit on Dev Before Merge
+        run: |
+          git fetch origin dev
+          
+          # Get last commit before merge
+          PREV_COMMIT=$(git rev-parse origin/dev^)
+          
+          echo "Previous commit before merge: $PREV_COMMIT"
+          echo "PREV_COMMIT=$PREV_COMMIT" >> $GITHUB_ENV
 
       - name: Check for Changes in application.properties
         run: |
-          # Fetch original application.properties from dev branch
-          git checkout origin/dev -- src/main/resources/application.properties
-
-          # Compare the checked-out file with the current version
-          if ! cmp -s src/main/resources/application.properties src/main/resources/application.properties; then
+          # Compare application.properties from before merge to after merge
+          if git diff --exit-code $PREV_COMMIT HEAD -- src/main/resources/application.properties; then
+            echo "✅ No changes in application.properties. Proceeding..."
+          else
             echo "🚨 application.properties has been modified! Build stopped."
             exit 1
           fi
