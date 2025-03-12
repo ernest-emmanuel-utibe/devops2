@@ -83,8 +83,11 @@ jobs:
 
       - name: Check for Changes in application.properties
         run: |
-          # Get differences between the latest dev branch and new commit
-          if git diff origin/dev HEAD --name-only | grep -q "src/main/resources/application.properties"; then
+          # Fetch original application.properties from dev branch
+          git checkout origin/dev -- src/main/resources/application.properties
+
+          # Compare the checked-out file with the current version
+          if ! cmp -s src/main/resources/application.properties src/main/resources/application.properties; then
             echo "🚨 application.properties has been modified! Build stopped."
             exit 1
           fi
